@@ -1,23 +1,22 @@
+# Etapa de build
 FROM ubuntu:latest AS build
 
-# Atualizar a lista de pacotes e instalar dependências
 RUN apt-get update && \
     apt-get install -y openjdk-17-jdk maven
 
-# Copiar o código fonte para o contêiner
+WORKDIR /app
+
 COPY . .
 
-# Construir o projeto com Maven, ignorando os testes
-RUN mvn clean install -DskipTests
+RUN mvn clean install
 
-# Criar uma imagem mais leve para execução
+# Etapa final
 FROM openjdk:17-jdk-slim
 
-# Expor a porta 8080
+WORKDIR /app
+
 EXPOSE 8080
 
-# Copiar o arquivo JAR gerado da etapa de construção
-COPY --from=build target/demo-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.jar app.jar
 
-# Definir o ponto de entrada para executar a aplicação
 ENTRYPOINT ["java", "-jar", "app.jar"]
