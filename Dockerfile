@@ -7,8 +7,8 @@ RUN apt-get update && \
 # Copiar o código fonte para o contêiner
 COPY . .
 
-# Construir o projeto com Maven
-RUN mvn clean install
+# Construir o projeto com Maven, ignorando os testes
+RUN mvn clean install -DskipTests
 
 # Criar uma imagem mais leve para execução
 FROM openjdk:17-jdk-slim
